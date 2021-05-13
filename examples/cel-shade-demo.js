@@ -15,30 +15,26 @@ export class Cel_Shade_Demo extends Scene {
             torus2: new defs.Torus(3, 15),
             circle: new defs.Regular_2D_Polygon(1, 15),
             sphere: new defs.Subdivision_Sphere(4),
+            axis: new defs.Axis_Arrows(),
         };
 
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .4,   diffusivity: .6, color: hex_color("#ffffff")}),
+                {ambient: .6, diffusivity: .5, color: hex_color("#ffffff")}),
             sphere: new Material(new defs.Cel_Shader(),
-                {ambient: .6, diffusivity: 0.5, specularity: 0.2, low_threshold: -0.05, high_threshold: 0.05, color: hex_color("#ffffff")}),
+                {ambient: .6, diffusivity: .5, specularity: 1, low_threshold: -0.05, high_threshold: 0.05, color: hex_color("#ffffff")}),
+            axis: new Material(new defs.Cel_Shader(),
+                {ambient: .6, diffusivity: .5, specularity: 0, low_threshold: -0.05, high_threshold: 0.05, color: hex_color("#ffffff")}),
+            background: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#b0b0b0")}),
         }
+        // If N*L is under low_threshold, diffused light is 0.
+        // If N*L is over high_threshold, diffused light is maxed.
+        // If N*L is between the thresholds, diffused light is interpolated from 0 to max.
+        // For reference N*L = 0 is when the light is perpendicular to the normal.
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
-    }
-
-    make_control_panel() {
-        // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-        this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => this.initial_camera_location);
-        this.new_line();
-        this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
-        this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
-        this.new_line();
-        this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
-        this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
-        this.new_line();
-        this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     display(context, program_state) {
@@ -56,11 +52,23 @@ export class Cel_Shade_Demo extends Scene {
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
 
-        const light_position = vec4(1, 1, 1, 1);
-        program_state.lights = [new Light(light_position, color(1, 1, 1, 1), 1000)];
+        // Directional light from right-top-front
+        program_state.lights = [new Light(vec4(1, 1, 1, 0), color(1, 1, 1, 1), 1000)];
 
-        // Sphere
+        // Cel Sphere
         let model_transform = Mat4.identity();
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sphere.override({color: [1, 0, 0, 1]}));
+
+        // Cel Axis
+        model_transform = model_transform.times(Mat4.translation(2, -1, -1));
+        this.shapes.axis.draw(context, program_state, model_transform, this.materials.axis.override({color: hex_color("#c7aa5b")}));
+
+        // Cel Donut
+        model_transform = model_transform.times(Mat4.translation(-4.5, 1, 1)).times(Mat4.rotation(t, 1, 2, 0));
+        this.shapes.torus.draw(context, program_state, model_transform, this.materials.axis.override({color: hex_color("#ff52dc")}));
+
+        // White background
+        model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
+        this.shapes.circle.draw(context, program_state, model_transform, this.materials.background);
     }
 }

@@ -127,7 +127,7 @@ const Windmill = defs.Windmill =
                 const newNormal = spin.times(vec4(0, 0, 1, 0)).to3();
                 // Propagate the same normal to all three vertices:
                 this.arrays.normal.push(newNormal, newNormal, newNormal);
-                this.arrays.texture_coord.push(...Vec.cast([0, 0], [0, 1], [1, 0]));
+                this.arrays.texture_coord.push(...Vector.cast([0, 0], [0, 1], [1, 0]));
                 // Procedurally connect the 3 new vertices into triangles:
                 this.indices.push(3 * i, 3 * i + 1, 3 * i + 2);
             }
@@ -780,15 +780,17 @@ const Cel_Shader = defs.Cel_Shader =
                         }
 
                         float specular = pow( max( dot( N, H ), 0.0 ), smoothness );
-                        // if (specular < low_threshold) {
+                        // float specular_low_threshold = pow( max( low_threshold, 0.0 ), smoothness );
+                        // float specular_high_threshold = pow( max( high_threshold, 0.01 ), smoothness );
+                        // if (specular < specular_low_threshold) {
                         //     specular = 0.0;
                         // }
-                        // else if (actual_high_threshold < specular) {
-                        //     specular = 1.0;
+                        // else if (specular_high_threshold < specular) {
+                        //     specular = pow( 0.92, smoothness );
                         // }
                         // else {
                         //     // Shrink the smooth shading interpolation to a small range
-                        //     specular = (specular - low_threshold) / (actual_high_threshold - low_threshold);
+                        //     specular = (specular - specular_low_threshold) / (specular_high_threshold - specular_low_threshold);
                         // }
 
                         float attenuation = 1.0 / (1.0 + light_attenuation_factors[i] * distance_to_light * distance_to_light );
