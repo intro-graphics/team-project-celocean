@@ -888,7 +888,7 @@ const Cel_Shader = defs.Cel_Shader =
 
             // Fill in any missing fields in the Material object with custom defaults for this shader:
             const defaults = {color: color(0, 0, 0, 1), ambient: 0, diffusivity: 1, specularity: 1, smoothness: 40,
-                low_threshold: -0.05, high_threshold: 0.05};
+                low_threshold: -0.01, high_threshold: 0.01};
             material = Object.assign({}, defaults, material);
 
             this.send_material(context, gpu_addresses, material);

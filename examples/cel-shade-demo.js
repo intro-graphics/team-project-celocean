@@ -37,7 +37,7 @@ export class Cel_Shade_Demo extends Scene {
             sphere: new Material(new defs.Cel_Shader(),
                 {ambient: .6, diffusivity: .5, specularity: 0.5, low_threshold: -0.01, high_threshold: 0.01, color: hex_color("#ffffff")}),
             axis: new Material(new defs.Cel_Shader(),
-                {ambient: .6, diffusivity: .5, specularity: 0, low_threshold: 0.05, high_threshold: 0.06, color: hex_color("#ffffff")}),
+                {ambient: .6, diffusivity: .5, specularity: 0, color: hex_color("#ffffff")}),
             background: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#b0b0b0")}),
             outline: new Material(new defs.Phong_Shader(),
@@ -87,7 +87,7 @@ export class Cel_Shade_Demo extends Scene {
         // Cel Axis
         model_transform = model_transform.times(Mat4.translation(2, -1, -1));
         this.shapes.axis.draw(context, program_state, model_transform, this.materials.axis.override({color: hex_color("#c7aa5b")}));
-        // Outlining composite shapes, like the axis, does not work because scaling doesn't work
+        // Outlining does not work because some faces are inside-out
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
         this.shapes.axis.draw(context, program_state, outline_transform, this.materials.outline);
@@ -120,6 +120,6 @@ export class Cel_Shade_Demo extends Scene {
 
         // White background
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
-        this.shapes.circle.draw(context, program_state, model_transform, this.materials.background);
+        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background);
     }
 }
