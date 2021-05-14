@@ -33,9 +33,9 @@ export class Cel_Shade_Demo extends Scene {
         // *** Materials
         this.materials = {
             test: new Material(new defs.Phong_Shader(),
-                {ambient: .6, diffusivity: .5, color: hex_color("#ffffff")}),
+                {ambient: .7, diffusivity: .3, specularity: 0.35, color: hex_color("#ffffff")}),
             sphere: new Material(new defs.Cel_Shader(),
-                {ambient: .6, diffusivity: .5, specularity: 0.35, smoothness: 40, 
+                {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
                     low_threshold: -0.01, high_threshold: 0.01, 
                     low_specular: 0.9, high_specular: 0.95,
                     color: hex_color("#ffffff")}),
@@ -125,5 +125,30 @@ export class Cel_Shade_Demo extends Scene {
         // White background
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background);
+
+        // Display comparison
+        {
+            model_transform = Mat4.identity().times(Mat4.translation(0, -5, 0));
+            this.shapes.sphere.draw(context, program_state, model_transform, this.materials.test.override({color: [1, 0, 0, 1]}));
+            
+            model_transform = model_transform.times(Mat4.translation(2.5, 0, 0));
+            this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sphere.override({color: [1, 0, 0, 1]}));
+            
+            model_transform = model_transform.times(Mat4.translation(2.5, 0, 0));
+            this.shapes.sphere.draw(context, program_state, model_transform, this.materials.test.override({color: [1, 0, 0, 1]}));
+            gl.cullFace(gl.BACK);
+            gl.enable(gl.CULL_FACE);
+            outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
+            this.shapes.sphere.draw(context, program_state, outline_transform, this.materials.outline);
+            gl.disable(gl.CULL_FACE);
+
+            model_transform = model_transform.times(Mat4.translation(2.5, 0, 0));
+            this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sphere.override({color: [1, 0, 0, 1]}));
+            // Outline for Cel Sphere
+            gl.enable(gl.CULL_FACE);
+            outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
+            this.shapes.sphere.draw(context, program_state, outline_transform, this.materials.outline);
+            gl.disable(gl.CULL_FACE);
+        }
     }
 }
