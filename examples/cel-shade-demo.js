@@ -27,7 +27,7 @@ export class Cel_Shade_Demo extends Scene {
             circle: new defs.Regular_2D_Polygon(1, 15),
             sphere: new defs.Subdivision_Sphere(4),
             axis: new defs.Axis_Arrows(),
-            bowl: new Suzanne(),
+            suzanne: new Suzanne(),
         };
 
         // *** Materials
@@ -35,9 +35,12 @@ export class Cel_Shade_Demo extends Scene {
             test: new Material(new defs.Phong_Shader(),
                 {ambient: .6, diffusivity: .5, color: hex_color("#ffffff")}),
             sphere: new Material(new defs.Cel_Shader(),
-                {ambient: .6, diffusivity: .5, specularity: 0.5, low_threshold: -0.01, high_threshold: 0.01, color: hex_color("#ffffff")}),
+                {ambient: .6, diffusivity: .5, specularity: 0.35, smoothness: 40, 
+                    low_threshold: -0.01, high_threshold: 0.01, 
+                    low_specular: 0.9, high_specular: 0.95,
+                    color: hex_color("#ffffff")}),
             axis: new Material(new defs.Cel_Shader(),
-                {ambient: .6, diffusivity: .5, specularity: 0, color: hex_color("#ffffff")}),
+                {ambient: .6, diffusivity: .5, specularity: 0.1, color: hex_color("#ffffff")}),
             background: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#b0b0b0")}),
             outline: new Material(new defs.Phong_Shader(),
@@ -46,7 +49,8 @@ export class Cel_Shade_Demo extends Scene {
         // If N*L is under low_threshold, diffused light is 0.
         // If N*L is over high_threshold, diffused light is maxed.
         // If N*L is between the thresholds, diffused light is interpolated from 0 to max.
-        // For reference N*L = 0 is when the light is perpendicular to the normal.
+        // Same idea with specularity for N*H and low_specular & high_specular
+        // For reference, N*L = 0 is when the light is perpendicular to the normal.
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
     }
@@ -105,17 +109,17 @@ export class Cel_Shade_Demo extends Scene {
         this.shapes.torus.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
 
-        // Cel Suzanne
+        // Cel Suzanne: the monkey example from Blender
         model_transform = Mat4.identity().times(Mat4.translation(-5, 0, 0));
-        this.shapes.bowl.draw(context, program_state, model_transform, this.materials.axis.override({color: hex_color("#70ad3e")}));
+        this.shapes.suzanne.draw(context, program_state, model_transform, this.materials.axis.override({specularity: 0, color: hex_color("#70ad3e")}));
         // Outline for Cel Suzanne. Needs the other faces culled
         gl.cullFace(gl.FRONT);
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
-        this.shapes.bowl.draw(context, program_state, outline_transform, this.materials.outline);
+        this.shapes.suzanne.draw(context, program_state, outline_transform, this.materials.outline);
         // Interior lines for Cel Suzanne
         outline_transform = model_transform.times(Mat4.scale(0.9, 0.9, 0.9));
-        this.shapes.bowl.draw(context, program_state, outline_transform, this.materials.outline);
+        this.shapes.suzanne.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
 
         // White background

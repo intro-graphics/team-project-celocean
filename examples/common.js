@@ -734,7 +734,7 @@ const Cel_Shader = defs.Cel_Shader =
                 uniform float light_attenuation_factors[N_LIGHTS];
                 uniform vec4 shape_color;
                 uniform vec3 squared_scale, camera_center;
-                uniform float low_threshold, high_threshold;
+                uniform float low_threshold, high_threshold, low_specular, high_specular;
         
                 // Specifier "varying" means a variable's final value will be passed from the vertex shader
                 // on to the next phase (fragment shader), then interpolated per-fragment, weighted by the
@@ -750,6 +750,10 @@ const Cel_Shader = defs.Cel_Shader =
                     float actual_high_threshold = high_threshold;
                     if (high_threshold <= low_threshold) {
                         actual_high_threshold = low_threshold + 0.01;
+                    }
+                    float actual_high_specular = high_specular;
+                    if (high_specular <= low_specular) {
+                        actual_high_specular = low_specular + 0.01;
                     }
 
                     for(int i = 0; i < N_LIGHTS; i++){
@@ -780,18 +784,18 @@ const Cel_Shader = defs.Cel_Shader =
                         }
 
                         float specular = pow( max( dot( N, H ), 0.0 ), smoothness );
-                        // float specular_low_threshold = pow( max( low_threshold, 0.0 ), smoothness );
-                        // float specular_high_threshold = pow( max( high_threshold, 0.01 ), smoothness );
-                        // if (specular < specular_low_threshold) {
-                        //     specular = 0.0;
-                        // }
-                        // else if (specular_high_threshold < specular) {
-                        //     specular = pow( 0.92, smoothness );
-                        // }
-                        // else {
-                        //     // Shrink the smooth shading interpolation to a small range
-                        //     specular = (specular - specular_low_threshold) / (specular_high_threshold - specular_low_threshold);
-                        // }
+                        float low = pow( low_specular, smoothness );
+                        float high = pow( actual_high_specular, smoothness );
+                        if (specular < low) {
+                            specular = 0.0;
+                        }
+                        else if (high < specular) {
+                            specular = 1.0;
+                        }
+                        else {
+                            // Shrink the smooth shading interpolation to a small range
+                            specular = (specular - low) / (high - low);
+                        }
 
                         float attenuation = 1.0 / (1.0 + light_attenuation_factors[i] * distance_to_light * distance_to_light );
                         
@@ -844,6 +848,8 @@ const Cel_Shader = defs.Cel_Shader =
             gl.uniform1f(gpu.smoothness, material.smoothness);
             gl.uniform1f(gpu.low_threshold, material.low_threshold);
             gl.uniform1f(gpu.high_threshold, material.high_threshold);
+            gl.uniform1f(gpu.low_specular, material.low_specular);
+            gl.uniform1f(gpu.high_specular, material.high_specular);
         }
 
         send_gpu_state(gl, gpu, gpu_state, model_transform) {
@@ -888,7 +894,7 @@ const Cel_Shader = defs.Cel_Shader =
 
             // Fill in any missing fields in the Material object with custom defaults for this shader:
             const defaults = {color: color(0, 0, 0, 1), ambient: 0, diffusivity: 1, specularity: 1, smoothness: 40,
-                low_threshold: -0.01, high_threshold: 0.01};
+                low_threshold: -0.01, high_threshold: 0.01, low_specular: 0.9, high_specular: 0.95};
             material = Object.assign({}, defaults, material);
 
             this.send_material(context, gpu_addresses, material);
