@@ -89,16 +89,12 @@ export class Ocean_Demo extends Scene {
         // Directional light from right-top-front
         program_state.lights = [new Light(vec4(Math.sin(this.t), 1, Math.cos(this.t), 0), color(1, 1, 1, 1), 100000)];
 
-        // Cel Sphere
         let model_transform = Mat4.identity().times(Mat4.rotation(90, 1, 0, 0)).times(Mat4.scale(10,10,10));
-        //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
 
+        //Interestingly, spheres are SMOOTHER
+        //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
+        //Drawing the wave grid!
         this.shapes.grid.draw(context, program_state, model_transform, this.materials.ocean.override({color: [0.68, 0.85, 0.90, 1], amplitude: 1.0, wavelength: 4.0, time: this.t}));
-        // Outline for Cel Sphere
-        gl.enable(gl.CULL_FACE);
-        let outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
-        //this.shapes.sphere.draw(context, program_state, outline_transform, this.materials.outline);
-        gl.disable(gl.CULL_FACE);
 
         // White background
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));

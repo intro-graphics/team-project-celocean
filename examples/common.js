@@ -1006,11 +1006,20 @@ const Ocean_Shader = defs.Ocean_Shader =
                     
                     //Let's attempt to create some sort of vertex distortion utilizing a sin
                     //Important: we have amplitude, wavelenght, speed, and time being PASSED IN
-                    vec3 pos_temp = vec3(position.x, position.y, amplitude*sin(wavelength*(position.x - speed * time)));
+                    float f = wavelength*(position.x - speed * time);
+                    vec3 pos_temp = vec3(position.x, position.y, amplitude*sin(f));
                     gl_Position = projection_camera_model_transform * vec4(pos_temp, 1.0);
 
                     // The final normal vector in screen space.
-                    N = normalize( mat3( model_transform ) * normal / squared_scale);
+
+                    //Find the trangent which is based on the wavelength of the wave
+                    //Derived from catlikecoding.com and deritives
+                    //tangent vector
+
+                    vec3 tangent = normalize(vec3(1,0,wavelength*amplitude*cos(f)));
+                    vec3 normal = vec3(tangent.z, 0, tangent.x);
+                    N = normalize(normal);
+                    //N = normalize( mat3( model_transform ) * normal / squared_scale);
                     vertex_worldspace = ( model_transform * vec4( position, 1.0 ) ).xyz;
                   } `;
         }
