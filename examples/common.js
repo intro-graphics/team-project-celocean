@@ -918,7 +918,7 @@ const Ocean_Shader = defs.Ocean_Shader =
                 uniform float light_attenuation_factors[N_LIGHTS];
                 uniform vec4 shape_color;
                 uniform vec3 squared_scale, camera_center;
-                uniform float low_threshold, high_threshold, low_specular, high_specular;
+                uniform float low_threshold, high_threshold, low_specular, high_specular, amplitude, wavelength, time, speed;
         
                 // Specifier "varying" means a variable's final value will be passed from the vertex shader
                 // on to the next phase (fragment shader), then interpolated per-fragment, weighted by the
@@ -1005,7 +1005,8 @@ const Ocean_Shader = defs.Ocean_Shader =
                     //gl_Position = projection_camera_model_transform * vec4( position, 1.0 );
                     
                     //Let's attempt to create some sort of vertex distortion utilizing a sin
-                    vec3 pos_temp = vec3(position.x, position.y, 2.0*sin(position.x * 5.0));
+                    //Important: we have amplitude, wavelenght, speed, and time being PASSED IN
+                    vec3 pos_temp = vec3(position.x, position.y, amplitude*sin(wavelength*(position.x - speed * time)));
                     gl_Position = projection_camera_model_transform * vec4(pos_temp, 1.0);
 
                     // The final normal vector in screen space.
@@ -1039,6 +1040,10 @@ const Ocean_Shader = defs.Ocean_Shader =
             gl.uniform1f(gpu.high_threshold, material.high_threshold);
             gl.uniform1f(gpu.low_specular, material.low_specular);
             gl.uniform1f(gpu.high_specular, material.high_specular);
+            gl.uniform1f(gpu.amplitude, material.amplitude);
+            gl.uniform1f(gpu.wavelength, material.wavelength);
+            gl.uniform1f(gpu.time, material.time);
+            gl.uniform1f(gpu.speed, material.speed);
         }
 
         send_gpu_state(gl, gpu, gpu_state, model_transform) {
@@ -1083,7 +1088,7 @@ const Ocean_Shader = defs.Ocean_Shader =
 
             // Fill in any missing fields in the Material object with custom defaults for this shader:
             const defaults = {color: color(0, 0, 0, 1), ambient: 0, diffusivity: 1, specularity: 1, smoothness: 40,
-                low_threshold: -0.01, high_threshold: 0.01, low_specular: 0.9, high_specular: 0.95};
+                low_threshold: -0.01, high_threshold: 0.01, low_specular: 0.9, high_specular: 0.95, amplitude: 2.0, wavelength: 5.0, time:1.0, speed:0.5};
             material = Object.assign({}, defaults, material);
 
             this.send_material(context, gpu_addresses, material);

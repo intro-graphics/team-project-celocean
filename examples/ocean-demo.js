@@ -9,6 +9,10 @@ export class Ocean_Demo extends Scene {
     constructor() {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
+        const initial_corner_point = vec3(-1, -1, 0);
+        const row_operation = (s, p) => p ? Mat4.translation(0, .1, 0).times(p.to4(1)).to3()
+            : initial_corner_point;
+        const column_operation = (t, p) => Mat4.translation(.1, 0, 0).times(p.to4(1)).to3();
 
         // At the beginning of our program, load one of each of these shape definitions onto the GPU.
         this.shapes = {
@@ -19,7 +23,7 @@ export class Ocean_Demo extends Scene {
             axis: new defs.Axis_Arrows(),
             square: new defs.Square(),
             cube: new defs.Cube(),
-            grid: new defs.Grid_Patch(),
+            grid: new defs.Grid_Patch(15, 15, row_operation, column_operation),
         };
 
         // *** Materials
@@ -51,7 +55,7 @@ export class Ocean_Demo extends Scene {
 
         this.paused = false;
         this.t = 0.0;
-        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 61), vec3(0, 0, 0), vec3(0, 1, 0));
     }
 
     make_control_panel() {
@@ -87,7 +91,9 @@ export class Ocean_Demo extends Scene {
 
         // Cel Sphere
         let model_transform = Mat4.identity().times(Mat4.rotation(90, 1, 0, 0)).times(Mat4.scale(10,10,10));
-        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
+        //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
+
+        this.shapes.grid.draw(context, program_state, model_transform, this.materials.ocean.override({color: [0.68, 0.85, 0.90, 1], amplitude: 1.0, wavelength: 4.0, time: this.t}));
         // Outline for Cel Sphere
         gl.enable(gl.CULL_FACE);
         let outline_transform = model_transform.times(Mat4.scale(1.05, 1.05, 1.05));
