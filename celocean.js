@@ -18,7 +18,8 @@ export class CelOcean extends Scene {
             sphere: new defs.Subdivision_Sphere(4),
             axis: new defs.Axis_Arrows(),
             yoyo: new Shape_From_File("assets/Yoyo/yoyo.obj"),
-            volcano: new Shape_From_File("assets/volcano.obj")
+            volcano: new Shape_From_File("assets/Volcano/volcano.obj"),
+            crabrock: new Shape_From_File("assets/CrabRock/CrabRock.obj")
         };
 
         // *** Materials
@@ -36,10 +37,15 @@ export class CelOcean extends Scene {
                 {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#b0b0b0")}),
             outline: new Material(new defs.Phong_Shader(),
                 {ambient: 0, diffusivity: 0, specularity: 0, color: hex_color("#000000")}),
-            texture: new Material(new defs.Textured_Cel(), {
+            volcano: new Material(new defs.Textured_Cel(), {
                 color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: 0.1, high_threshold: 0.11, 
-                texture: new Texture("assets/Volcano.png")
+                texture: new Texture("assets/Volcano/Volcano.png")
+            }),
+            crabrock: new Material(new defs.Textured_Cel(), {
+                color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: 0.1, high_threshold: 0.11, 
+                texture: new Texture("assets/CrabRock/CrabRock.png")
             }),
         }
         // If N*L is under low_threshold, diffused light is 0.
@@ -116,7 +122,7 @@ export class CelOcean extends Scene {
 
         // Textured human (Just ignore the head. I don't know how to use multiple textures)
         model_transform = Mat4.identity().times(Mat4.translation(5, 0.5, 0)).times(Mat4.scale(0.9, 0.9, 0.9));
-        this.shapes.yoyo.draw(context, program_state, model_transform, this.materials.texture);
+        this.shapes.yoyo.draw(context, program_state, model_transform, this.materials.volcano);
         // Outlines
         gl.enable(gl.CULL_FACE);
         gl.cullFace(gl.FRONT);
@@ -128,13 +134,23 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Volcano
-        model_transform = Mat4.identity().times(Mat4.translation(0, 0, -20)).times(Mat4.scale(10, 10, 10));
-        this.shapes.volcano.draw(context, program_state, model_transform, this.materials.texture);
+        model_transform = Mat4.identity().times(Mat4.translation(0, 0, -50)).times(Mat4.scale(10, 10, 10));
+        this.shapes.volcano.draw(context, program_state, model_transform, this.materials.volcano);
         // Outlines
         gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.FRONT);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.volcano.draw(context, program_state, outline_transform, this.materials.outline);
+        gl.disable(gl.CULL_FACE);
+        
+        // Crab Rock
+        model_transform = Mat4.identity().times(Mat4.translation(-30, 5, -50)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(10, 10, 10));
+        this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
+        // Outlines
+        gl.enable(gl.CULL_FACE);
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
+        outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
+        this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
 
         // White background
