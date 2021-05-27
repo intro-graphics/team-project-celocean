@@ -71,6 +71,7 @@ export class Music extends Scene {
         this.key_triggered_button("Inc. Modifier", ["d"], () => this.wavelength = this.wavelength + 1.0);
         this.key_triggered_button("Dec. Modifier", ["a"], () => this.wavelength = this.wavelength - 1.0);
         this.key_triggered_button("Play Music", ["m"], () => this.audioElement.play());
+        this.key_triggered_button("Play Musict", ["m"], () => this.audioCtx.resume());
     }
 
     display(context, program_state) {
@@ -104,6 +105,9 @@ export class Music extends Scene {
         //Interestingly, spheres are SMOOTHER
         //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
         //Drawing the wave grid!
+        this.analyser.getByteFrequencyData(this.data);
+        this.amplitude = (this.data[0])/255;
+
         this.shapes.grid.draw(context, program_state, model_transform, this.materials.ocean.override({color: [0.68, 0.85, 0.90, 1], amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
 
         // White background
@@ -113,8 +117,6 @@ export class Music extends Scene {
     }
 
     music_test(){
-
-        console.log()
         this.audioCtx = new AudioContext();
         this.analyser = this.audioCtx.createAnalyser();
         this.analyser.fftSize = 2048;
@@ -123,6 +125,7 @@ export class Music extends Scene {
         //this connects our music back to the default output, such as your //speakers 
         this.source.connect(this.audioCtx.destination);
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
+
 
     }
 }
