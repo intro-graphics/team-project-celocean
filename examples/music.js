@@ -9,8 +9,10 @@ export class Music extends Scene {
     constructor(music_src) {
         // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
         super();
+
+        //Modified constructor where the music src is passed into us.
         this.audioElement = music_src;
-        console.log(music_src);
+
         const initial_corner_point = vec3(-1, -1, 0);
         const row_operation = (s, p) => p ? Mat4.translation(0, .1, 0).times(p.to4(1)).to3()
             : initial_corner_point;
@@ -60,7 +62,7 @@ export class Music extends Scene {
         this.initial_camera_location = Mat4.look_at(vec3(4, 0, 48), vec3(0, 0, 0), vec3(0, 1, 0));
         this.amplitude = 0.2;
         this.wavelength  = 5.0;
-        this.music_test();
+        this.init_music_system();
     }
 
     make_control_panel() {
@@ -102,11 +104,10 @@ export class Music extends Scene {
 
         let model_transform = Mat4.identity().times(Mat4.rotation(90,1,0,0)).times(Mat4.scale(2,2,2));
 
-        //Interestingly, spheres are SMOOTHER
-        //this.shapes.sphere.draw(context, program_state, model_transform, this.materials.ocean.override({color: [1, 0, 0, 1]}));
-        //Drawing the wave grid!
+        //Grab the frequency data
         this.analyser.getByteFrequencyData(this.data);
-        this.amplitude = (this.data[0])/255;
+        //normalize the data @ this moment | out of 255, but raised to make it look more like waves!
+        this.amplitude = (this.data[0])/455;
 
         this.shapes.grid.draw(context, program_state, model_transform, this.materials.ocean.override({color: [0.68, 0.85, 0.90, 1], amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
 
@@ -116,14 +117,18 @@ export class Music extends Scene {
 
     }
 
-    music_test(){
+    init_music_system(){
+        //Using the WebAudio API as described as Mozilla
         this.audioCtx = new AudioContext();
         this.analyser = this.audioCtx.createAnalyser();
+        //Standard Settings
         this.analyser.fftSize = 2048;
+        // map is source -> analyser -> audiotCTX destination(speaker)
         this.source = this.audioCtx.createMediaElementSource(this.audioElement);
         this.source.connect(this.analyser);
         //this connects our music back to the default output, such as your //speakers 
         this.source.connect(this.audioCtx.destination);
+        //Here we are defining data -> to be an array of frequency Bins size(255)
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
 
 
