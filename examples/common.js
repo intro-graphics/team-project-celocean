@@ -999,8 +999,31 @@ const Ocean_Shader = defs.Ocean_Shader =
                 
                 uniform mat4 model_transform;
                 uniform mat4 projection_camera_model_transform;
-        
-                void main(){                                                                                       
+
+                vec3 GerstnerWave(vec3 direction){
+                    //Important: we have amplitude, wavelenght, speed, and time being PASSED IN
+                    //Distortion applied to the x and time
+                    float k = 2.0 * 3.141 / wavelength;
+                    //Phase Speed
+                    float c = sqrt(9.8 / k);
+                    //Amplitude -> The STEEPNESS(prevent loops)
+                    float a = amplitude / k;
+
+                    //Add direction of the waves
+                    //GOAL: Pass in a direction vector?
+                    
+                    vec3 d = normalize(direction);
+
+                    //Final "inside cosine/sine"
+                    float f = k * (dot(d.xy,position.xy) - c * time);
+
+                    vec3 result = vec3(d.x * (a*cos(f)), a * sin(f), d.y * (a * cos(f)));
+
+                    return result;
+                }
+
+                void main(){                                
+                    /*                                                       
                     //Important: we have amplitude, wavelenght, speed, and time being PASSED IN
                     //
                     //Distortion applied to the x and time
@@ -1021,12 +1044,14 @@ const Ocean_Shader = defs.Ocean_Shader =
                     vec3 pos_temp = vec3(position.x, position.y, a*sin(f));
                     pos_temp.x = position.x + d.x*(a*cos(f));
                     pos_temp.y = position.y + d.y*(a*cos(f));
+                    */
+                    vec3 pos_temp = vec3(position.x, position.y, position.z);
+                    pos_temp += GerstnerWave(vec3(1,1,0));
+                    pos_temp += GerstnerWave(vec3(0,1,0));
+                    pos_temp += GerstnerWave(vec3(1,0,0));
 
                     //Set final vertex position
                     gl_Position = projection_camera_model_transform * vec4(pos_temp, 1.0);
-
-
-
 
 
                     // The final normal vector in screen space.
@@ -1034,12 +1059,13 @@ const Ocean_Shader = defs.Ocean_Shader =
                     //Find the trangent which is based on the wavelength of the wave
                     //Derived from catlikecoding.com and deritives
                     //tangent vector
-                    
+                    /*
                     vec3 tangent = normalize(vec3(1,0,k*amplitude*cos(f)));
                     vec3 normal = vec3(-tangent.z, 0, tangent.x);
                     N = normalize(normal);
                     //Below is original code
                     //N = normalize( mat3( model_transform ) * normal / squared_scale);
+                    */
                     vertex_worldspace = ( model_transform * vec4( position, 1.0 ) ).xyz;
                   } `;
         }
