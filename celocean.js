@@ -33,8 +33,8 @@ export class CelOcean extends Scene {
 
         // *** Materials
         this.materials = {
-            test: new Material(new defs.Phong_Shader(),
-                {ambient: .7, diffusivity: .3, specularity: 0.35, color: hex_color("#ffffff")}),
+            sun: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#FCD440")}),
             sphere: new Material(new defs.Cel_Shader(),
                 {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
                     low_threshold: -0.01, high_threshold: 0.01, 
@@ -108,17 +108,24 @@ export class CelOcean extends Scene {
             this.t = program_state.animation_time / 1000;
         }
 
-        // Directional light from right-top-front
-        program_state.lights = [new Light(vec4(Math.sin(this.t), 1, Math.cos(this.t), 0), color(1, 1, 1, 1), 100000)];
-
         //Grab the frequency data
         this.analyser.getByteFrequencyData(this.data);
         //normalize the data @ this moment | out of 255, but raised to make it look more like waves!
         this.amplitude = (this.data[0])/455;
 
-        let model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        // Directional light from right-top-front
+        program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.sin(this.t/10), 0, 0), color(1, 1, 1, 1), 100000)];
+        // Sun
+        let model_transform = Mat4.identity().times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(50, 0, 0)).times(Mat4.scale(5, 5, 5));
+        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
+
+        model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
         this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
         // console.log("Amplitude: " + this.amplitude + "Wavelength: " + this.wavelength);
+
+        // Test Sphere
+        // model_transform = Mat4.identity();
+        // this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sphere);
 
         // Volcano
         model_transform = Mat4.identity().times(Mat4.translation(5, 0.05, 5)).times(Mat4.scale(0.5, 0.5, 0.5));
