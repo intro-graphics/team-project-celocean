@@ -1326,7 +1326,7 @@ const Movement_Controls = defs.Movement_Controls =
             const data_members = {
                 roll: 0, look_around_locked: true,
                 thrust: vec3(0, 0, 0), pos: vec3(0, 0, 0), z_axis: vec3(0, 0, 0),
-                radians_per_frame: 1 / 200, meters_per_frame: 20, speed_multiplier: 1
+                radians_per_frame: 1 / 200, meters_per_frame: 20, speed_multiplier: 0.1
             };
             Object.assign(this, data_members);
 
