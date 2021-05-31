@@ -13,13 +13,16 @@
 
 <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls.-->
 <div class="canvas-widget" id="main-canvas"></div>
+
 <audio id="source" src="/assets/Music/test6lack.mp3"></audio>
+
 <script type=module>
     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
     // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
     const element_to_replace = document.querySelector("#main-canvas");
     import {Main_Scene, Additional_Scenes, Canvas_Widget} from './main-scene.js';
     // Import the file that defines a scene.
+    // Sending in the music source to the scene(not sent it for other constructors)
     const scenes = [Main_Scene, ...Additional_Scenes].map(scene => new scene(document.getElementById("source")));
     // This line creates your scene.
     new Canvas_Widget(element_to_replace, scenes);
