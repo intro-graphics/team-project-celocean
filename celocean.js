@@ -20,6 +20,7 @@ export class CelOcean extends Scene {
             yoyo: new Shape_From_File("assets/Yoyo/yoyo.obj"),
             volcano: new Shape_From_File("assets/Volcano/volcano.obj"),
             crabrock: new Shape_From_File("assets/CrabRock/CrabRock.obj")
+            boat: new Shape_From_File("assets/Boat/Boat.obj")
         };
 
         // *** Materials
@@ -46,6 +47,11 @@ export class CelOcean extends Scene {
                 color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: 0.1, high_threshold: 0.11, 
                 texture: new Texture("assets/CrabRock/CrabRock.png")
+            boat: new Material(new defs.Textured_Cel(),{
+                color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: 0.1, high_threshold: 0.11, 
+                texture: new Texture("assets/Boat/Boat.png")
+            })
             }),
         }
         // If N*L is under low_threshold, diffused light is 0.
@@ -145,12 +151,23 @@ export class CelOcean extends Scene {
         // Crab Rock
         model_transform = Mat4.identity().times(Mat4.translation(-30, 5, -50)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(10, 10, 10));
         this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
+
+        // Boat
+        model_transform = Mat4.identity().times(Mat4.translation(-30, 50, -50)).times(Mat4.scale(10,10,10));
+        this.shapes.boat.draw(context, program_state, outline_transform, this.materials.boat);
+        
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
+        
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
+        outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
+        this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
+        
         gl.disable(gl.CULL_FACE);
 
         // White background
