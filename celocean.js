@@ -61,7 +61,7 @@ export class CelOcean extends Scene {
                     low_specular: 0.9, high_specular: 0.95,
                     color: hex_color("#ffffff")}),
 			boat: new Material(new defs.Textured_Cel(),{
-                color: color(.25,.05,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                color: color(0.25,.1,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.1, high_threshold: 0.1, 
                 texture: new Texture("assets/Boat/boat.png")})
         }
@@ -153,8 +153,9 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Boat
-        model_transform = Mat4.identity().times(Mat4.scale(.2,.2,.2).times(Mat4.translation(3, .2, 4)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
+        model_transform = Mat4.identity().times(Mat4.scale(.1,.1,.1).times(Mat4.translation(3, .2, 4)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
+        
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
