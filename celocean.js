@@ -88,6 +88,15 @@ export class CelOcean extends Scene {
         this.key_triggered_button("Dec. Wavelength", ["j"], () => this.wavelength = this.wavelength - 0.1);
         this.key_triggered_button("Play Music", ["n"], () => this.audioElement.play());
         this.key_triggered_button("Resume Music", ["m"], () => this.audioCtx.resume());
+
+        /* MOVEMENT WIP
+
+        this.key_triggered_button("Forward", ["w"], () => this.
+        this.key_triggered_button("Backward",
+        this.key_triggered_button("Left",
+        this.key_triggered_button("Right",
+
+        */
     }
 
     display(context, program_state) {
