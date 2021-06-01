@@ -49,22 +49,21 @@ export class CelOcean extends Scene {
                 {ambient: 0, diffusivity: 0, specularity: 0, color: hex_color("#000000")}),
             volcano: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: 0.1, high_threshold: 0.11, 
+                low_threshold: -0.1, high_threshold: 0.1, 
                 texture: new Texture("assets/Volcano/Volcano.png")}),
             crabrock: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: 0.1, high_threshold: 0.11, 
+                low_threshold: -0.1, high_threshold: 0.1, 
                 texture: new Texture("assets/CrabRock/CrabRock.png")}),
             ocean: new Material(new defs.Ocean_Shader(),
                 {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
                     low_threshold: -0.01, high_threshold: 0.01, 
                     low_specular: 0.9, high_specular: 0.95,
-                    color: hex_color("#ffffff")})
+                    color: hex_color("#ffffff")}),
 			boat: new Material(new defs.Textured_Cel(),{
-                color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: 0.1, high_threshold: 0.11, 
-                texture: new Texture("assets/Boat/Boat.png")
-            })
+                color: color(.8,.8,.8, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: -0.1, high_threshold: 0.1, 
+                texture: new Texture("assets/Boat/Boat.png")})
         }
         // If N*L is under low_threshold, diffused light is 0.
         // If N*L is over high_threshold, diffused light is maxed.
@@ -145,23 +144,23 @@ export class CelOcean extends Scene {
         // Crab Rock
         model_transform = Mat4.identity().times(Mat4.translation(2, 0.3, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
-
-        // Boat
-        model_transform = Mat4.identity().times(Mat4.translation(-30, 50, -50)).times(Mat4.scale(10,10,10));
-        this.shapes.boat.draw(context, program_state, outline_transform, this.materials.boat);
-        
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
-        
+        gl.disable(gl.CULL_FACE);
+
+        // Boat
+        model_transform = Mat4.identity().times(Mat4.scale(.2,.2,.2).times(Mat4.translation(3, .2, 4)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
+        this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
+        // Outlines
+        gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
-        
         gl.disable(gl.CULL_FACE);
 
         // White background
