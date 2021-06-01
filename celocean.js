@@ -61,9 +61,9 @@ export class CelOcean extends Scene {
                     low_specular: 0.9, high_specular: 0.95,
                     color: hex_color("#ffffff")}),
 			boat: new Material(new defs.Textured_Cel(),{
-                color: color(.8,.8,.8, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                color: color(.25,.05,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.1, high_threshold: 0.1, 
-                texture: new Texture("assets/Boat/Boat.png")})
+                texture: new Texture("assets/Boat/boat.png")})
         }
         // If N*L is under low_threshold, diffused light is 0.
         // If N*L is over high_threshold, diffused light is maxed.
