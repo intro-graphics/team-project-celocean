@@ -30,6 +30,7 @@ export class CelOcean extends Scene {
             crabrock: new Shape_From_File("assets/CrabRock/CrabRock.obj"),
             building: new Shape_From_File("assets/Building/Building.obj"),
             lagoon: new Shape_From_File("assets/Lagoon/Lagoon.obj"),
+            santorini: new Shape_From_File("assets/Santorini/Santorini.obj"),
             ocean: new defs.Grid_Patch(100, 100, row_operation, column_operation),
 			boat: new Shape_From_File("assets/Boat/Boat.obj")
         };
@@ -65,6 +66,10 @@ export class CelOcean extends Scene {
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.1, high_threshold: 0.1, 
                 texture: new Texture("assets/Lagoon/Lagoon.png")}),
+            santorini: new Material(new defs.Textured_Cel(), 
+                {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: -0.1, high_threshold: 0.1, 
+                texture: new Texture("assets/Santorini/Santorini.png")}),
             ocean: new Material(new defs.Ocean_Shader(),
                 {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
                     low_threshold: -0.01, high_threshold: 0.01, 
@@ -162,7 +167,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
         
         // Crab Rock
-        model_transform = Mat4.identity().times(Mat4.translation(2, 0.3, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(2, 0.35, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
         // Outlines
         gl.enable(gl.CULL_FACE);
@@ -190,6 +195,15 @@ export class CelOcean extends Scene {
         this.shapes.lagoon.draw(context, program_state, outline_transform, this.materials.outline);
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.lagoon.draw(context, program_state, outline_transform, this.materials.outline);
+        gl.disable(gl.CULL_FACE);
+        
+        // Santorini
+        model_transform = Mat4.identity().times(Mat4.translation(8, 0.2, 1)).times(Mat4.rotation(Math.PI/4, 0, 1, 0)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        this.shapes.santorini.draw(context, program_state, model_transform, this.materials.santorini);
+        // Outlines
+        gl.enable(gl.CULL_FACE);
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        this.shapes.santorini.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
 
         // Boat
