@@ -28,6 +28,8 @@ export class CelOcean extends Scene {
             yoyo: new Shape_From_File("assets/Yoyo/yoyo.obj"),
             volcano: new Shape_From_File("assets/Volcano/volcano.obj"),
             crabrock: new Shape_From_File("assets/CrabRock/CrabRock.obj"),
+            building: new Shape_From_File("assets/Building/Building.obj"),
+            lagoon: new Shape_From_File("assets/Lagoon/Lagoon.obj"),
             ocean: new defs.Grid_Patch(100, 100, row_operation, column_operation),
 			boat: new Shape_From_File("assets/Boat/Boat.obj")
         };
@@ -55,6 +57,14 @@ export class CelOcean extends Scene {
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.1, high_threshold: 0.1, 
                 texture: new Texture("assets/CrabRock/CrabRock.png")}),
+            building: new Material(new defs.Textured_Cel(), 
+                {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: -0.1, high_threshold: 0.1, 
+                texture: new Texture("assets/Building/Building.png")}),
+            lagoon: new Material(new defs.Textured_Cel(), 
+                {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
+                low_threshold: -0.1, high_threshold: 0.1, 
+                texture: new Texture("assets/Lagoon/Lagoon.png")}),
             ocean: new Material(new defs.Ocean_Shader(),
                 {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
                     low_threshold: -0.01, high_threshold: 0.01, 
@@ -133,6 +143,7 @@ export class CelOcean extends Scene {
         let model_transform = Mat4.identity().times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(50, 0, 0)).times(Mat4.scale(5, 5, 5));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
 
+        // Ocean
         model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
         this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
         // console.log("Amplitude: " + this.amplitude + "Wavelength: " + this.wavelength);
@@ -160,11 +171,30 @@ export class CelOcean extends Scene {
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.crabrock.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
+        
+        // Building
+        model_transform = Mat4.identity().times(Mat4.translation(8, 0.5, 8)).times(Mat4.rotation(Math.PI/4, 1, 1, 1)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        this.shapes.building.draw(context, program_state, model_transform, this.materials.building);
+        // Outlines
+        gl.enable(gl.CULL_FACE);
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        this.shapes.building.draw(context, program_state, outline_transform, this.materials.outline);
+        gl.disable(gl.CULL_FACE);
+        
+        // Lagoon
+        model_transform = Mat4.identity().times(Mat4.translation(1, 0.1, 7)).times(Mat4.rotation(-Math.PI/4, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        this.shapes.lagoon.draw(context, program_state, model_transform, this.materials.lagoon);
+        // Outlines
+        gl.enable(gl.CULL_FACE);
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        this.shapes.lagoon.draw(context, program_state, outline_transform, this.materials.outline);
+        outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
+        this.shapes.lagoon.draw(context, program_state, outline_transform, this.materials.outline);
+        gl.disable(gl.CULL_FACE);
 
         // Boat
-        model_transform = Mat4.identity().times(Mat4.scale(.1,.1,.1).times(Mat4.translation(3, .2, 4)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
+        model_transform = Mat4.identity().times(Mat4.scale(.1,.1,.1).times(Mat4.translation(50, .2, 75)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
-        
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
