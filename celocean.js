@@ -282,7 +282,7 @@ export class CelOcean extends Scene {
         result += this.GerstnerWaveY(dir2, x, z);
         result += this.GerstnerWaveY(dir3, x, z);
 
-        return result;
+        return result/2;
     }
     
     GerstnerWaveY(direction, x, z){
