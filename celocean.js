@@ -93,11 +93,13 @@ export class CelOcean extends Scene {
         this.init_music_system();
         this.boat_location_x = 5;
         this.boat_location_z = 7.5;
+        this.boat_rotation = Math.PI;
         this.daySky = color(135/256, 206/256, 235/256, 1);
         this.nightSky = color(20/256, 24/256, 82/256, 1);
         this.initial_camera_location = Mat4.look_at(vec3(5, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
         this.move_speed = 0.02;
-        this.boat_rotation = 0;
+        this.rotate_speed = Math.PI / 32;
+        this.forwardVec = vec(0, -this.move_speed);
     }
 
     make_control_panel() {
@@ -111,14 +113,24 @@ export class CelOcean extends Scene {
         this.key_triggered_button("Resume Music", ["m"], () => this.audioCtx.resume());
 
         // MOVEMENT
-        this.key_triggered_button("Forward", ["w"], () => this.moveBoat(false));
-        this.key_triggered_button("Backward", ["s"], () => this.moveBoat(true));
-        this.key_triggered_button("Turn Left", ["a"], () => this.boat_location_x -= this.move_speed);
-        this.key_triggered_button("Turn Right", ["d"], () => this.boat_location_x += this.move_speed);
+        this.key_triggered_button("Forward", ["w"], () => this.moveBoat(true));
+        this.key_triggered_button("Backward", ["s"], () => this.moveBoat(false));
+        this.key_triggered_button("Turn Left", ["a"], () => this.rotateBoat(true));
+        this.key_triggered_button("Turn Right", ["d"], () => this.rotateBoat(false));
     }
 
     moveBoat(forward) {
-        this.boat_location_z += forward ? this.move_speed : -this.move_speed;
+        // console.log(this.forwardVec);
+        this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
+        this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
+    }
+
+    rotateBoat(clockwise) {
+        this.boat_rotation += clockwise ? this.rotate_speed : -this.rotate_speed;
+        // Dude, I cannot overstate how much I LOVE lin alg
+        this.forwardVec = new Matrix([Math.cos(this.boat_rotation), Math.sin(this.boat_rotation)],
+                                    [-Math.sin(this.boat_rotation), Math.cos(this.boat_rotation)])
+                                .times(vec(0, this.move_speed));
     }
 
     display(context, program_state) {
@@ -215,7 +227,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Boat
-        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015, this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(Math.PI, 0, 1, 0)));
+        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015, this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
         // Outlines
         gl.enable(gl.CULL_FACE);
