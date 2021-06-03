@@ -148,7 +148,7 @@ export class CelOcean extends Scene {
         // Enable culling for next drawn objects with gl.enable(gl.CULL_FACE)
         // Disable culling with gl.disable(gl.CULLFACE)
         var gl = context.context;
-        gl.cullFace(gl.FRONT);
+        gl.cullFace(gl.BACK);
 
         program_state.projection_transform = Mat4.perspective(
             Math.PI / 4, context.width / context.height, .1, 1000);
@@ -165,8 +165,13 @@ export class CelOcean extends Scene {
         // Directional light from right-top-front
         program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.sin(this.t/10), 0, 0), color(1, 1, 1, 1), 100000)];
         // Sun
-        let model_transform = Mat4.identity().times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(50, 0, 0)).times(Mat4.scale(5, 5, 5));
+        let model_transform = Mat4.identity().times(Mat4.translation(5, 0, 5)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
+        // Outline
+        gl.enable(gl.CULL_FACE);
+        let outline_transform = model_transform.times(Mat4.scale(1.03, 1.03, 1.03));
+        this.shapes.sphere.draw(context, program_state, outline_transform, this.materials.outline);
+        gl.disable(gl.CULL_FACE);
 
         // Ocean
         model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
@@ -180,9 +185,10 @@ export class CelOcean extends Scene {
         // Volcano
         model_transform = Mat4.identity().times(Mat4.translation(5, 0.05, 5)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.volcano.draw(context, program_state, model_transform, this.materials.volcano);
-        // Outlines
+        // Outline
+        gl.cullFace(gl.FRONT);
         gl.enable(gl.CULL_FACE);
-        let outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.volcano.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
         
@@ -200,7 +206,7 @@ export class CelOcean extends Scene {
         // Building
         model_transform = Mat4.identity().times(Mat4.translation(8, 0.5, 8)).times(Mat4.rotation(Math.PI/4, 1, 1, 1)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.building.draw(context, program_state, model_transform, this.materials.building);
-        // Outlines
+        // Outline
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.building.draw(context, program_state, outline_transform, this.materials.outline);
@@ -220,7 +226,7 @@ export class CelOcean extends Scene {
         // Santorini
         model_transform = Mat4.identity().times(Mat4.translation(8, 0.2, 1)).times(Mat4.rotation(Math.PI/4, 0, 1, 0)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.santorini.draw(context, program_state, model_transform, this.materials.santorini);
-        // Outlines
+        // Outline
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
         this.shapes.santorini.draw(context, program_state, outline_transform, this.materials.outline);
@@ -240,16 +246,14 @@ export class CelOcean extends Scene {
 
         // Sky
         let sky = this.nightSky.mix(this.daySky, Math.sin(this.t / 10));
-        model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
+        model_transform = Mat4.identity().times(Mat4.translation(5, 0, 5)).times(Mat4.scale(12, 12, 12));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background.override({color: sky}));
 
         // Camera
         if (this.attached !== undefined) {
             let desired = this.attached;
-            desired = Mat4.inverse(desired.times(Mat4.translation(0, 1, -5)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
-
-            // Requirement 6
-            desired = desired.map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.2));
+            desired = Mat4.inverse(desired.times(Mat4.translation(0, 1, -5)).times(Mat4.rotation(Math.PI, 0, 1, 0)))
+                        .map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.2));
             program_state.set_camera(desired);
         }
     }
