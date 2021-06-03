@@ -90,10 +90,12 @@ export class CelOcean extends Scene {
         this.t = 0.0;
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
         this.amplitude = 0.2;
-        this.wavelength  = 0.5;
+        this.wavelength = 0.5;
         this.init_music_system();
         this.boat_location_x = 0;
         this.boat_location_z = 0;
+        this.daySky = color(135/256, 206/256, 235/256, 1);
+        this.nightSky = color(20/256, 24/256, 82/256, 1);
     }
 
     make_control_panel() {
@@ -217,9 +219,10 @@ export class CelOcean extends Scene {
         this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
         gl.disable(gl.CULL_FACE);
 
-        // White background
+        // Sky
+        let sky = this.nightSky.mix(this.daySky, sineMath.sin(this.t / 10));
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
-        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background);
+        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background.override({color: sky}));
     }
 
     init_music_system(){
