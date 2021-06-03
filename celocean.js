@@ -227,7 +227,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Boat
-        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015, this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
+        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015 + this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
         this.attached = model_transform;
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
         // Outlines
@@ -267,5 +267,38 @@ export class CelOcean extends Scene {
         this.source.connect(this.audioCtx.destination);
         //Here we are defining data -> to be an array of frequency Bins size(255)
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
+    }
+
+    y_coord_wave(x,z){
+        var dir1 = vec3(1,1,0);
+        var dir2 = vec3(0,1,0);
+        var dir3 = vec3(1,0,0);
+
+        var result = this.GerstnerWaveY(dir1, x, z);
+        result += this.GerstnerWaveY(dir2, x, z);
+        result += this.GerstnerWaveY(dir3, x, z);
+
+        return result;
+    }
+    
+    GerstnerWaveY(direction, x, z){
+        //Important: we have amplitude, wavelenght, speed, and time being PASSED IN
+        //Distortion applied to the x and time
+        var k = 2.0 * 3.141 / this.wavelength;
+        //Phase Speed
+        var c = Math.sqrt(9.8 / k);
+        //Amplitude -> The STEEPNESS(prevent loops)
+        var a = this.amplitude / k;
+        //Direciton is a vector 3 which we must normalize
+        
+        var d = direction.normalized();
+        var position = new Vector3(x,z,0);
+        //Final "inside cosine/sine"
+        //dot product
+        let dot = (a, b) => a.map((x, i) => a[i] * b[i]).reduce((m, n) => m + n);
+        var f = k * (dot(d, position) - c * this.t);
+
+        var result = d[1] * (a * Math.cos(f));
+        return result;
     }
 }
