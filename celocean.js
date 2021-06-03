@@ -52,23 +52,23 @@ export class CelOcean extends Scene {
                 {ambient: 0, diffusivity: 0, specularity: 0, color: hex_color("#000000")}),
             volcano: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/Volcano/Volcano.png")}),
             crabrock: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/CrabRock/CrabRock.png")}),
             building: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/Building/Building.png")}),
             lagoon: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/Lagoon/Lagoon.png")}),
             santorini: new Material(new defs.Textured_Cel(), 
                 {color: color(.1,.1,.1, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/Santorini/Santorini.png")}),
             ocean: new Material(new defs.Ocean_Shader(),
                 {ambient: .7, diffusivity: .3, specularity: 0.35, smoothness: 40, 
@@ -77,7 +77,7 @@ export class CelOcean extends Scene {
                     color: hex_color("#ffffff")}),
 			boat: new Material(new defs.Textured_Cel(),{
                 color: color(0.25,.1,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
-                low_threshold: -0.1, high_threshold: 0.1, 
+                low_threshold: -0.01, high_threshold: 0.01, 
                 texture: new Texture("assets/Boat/boat.png")})
         }
         // If N*L is under low_threshold, diffused light is 0.
@@ -228,10 +228,11 @@ export class CelOcean extends Scene {
 
         // Boat
         model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015, this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
+        this.attached = model_transform;
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
         // Outlines
         gl.enable(gl.CULL_FACE);
-        outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
+        outline_transform = model_transform.times(Mat4.scale(1.03, 1.03, 1.03));
         this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
         outline_transform = model_transform.times(Mat4.scale(.98, .98, .98));
         this.shapes.boat.draw(context, program_state, outline_transform, this.materials.outline);
@@ -241,6 +242,16 @@ export class CelOcean extends Scene {
         let sky = this.nightSky.mix(this.daySky, Math.sin(this.t / 10));
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background.override({color: sky}));
+
+        // Camera
+        if (this.attached !== undefined) {
+            let desired = this.attached;
+            desired = Mat4.inverse(desired.times(Mat4.translation(0, 1, -5)).times(Mat4.rotation(Math.PI, 0, 1, 0)));
+
+            // Requirement 6
+            desired = desired.map((x,i) => Vector.from(program_state.camera_inverse[i]).mix(x, 0.2));
+            program_state.set_camera(desired);
+        }
     }
 
     init_music_system(){
