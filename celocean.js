@@ -120,7 +120,8 @@ export class CelOcean extends Scene {
         // display():  Called once per frame of animation.
         // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
         if (!context.scratchpad.controls) {
-            this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
+            //Pass in true to enable movement of camera controls
+            this.children.push(context.scratchpad.controls = new defs.Movement_Controls(false));
             // Define the global camera and projection matrices, which are stored in program_state.
             let init = this.initial_camera_location
             program_state.set_camera(this.initial_camera_location);
@@ -220,7 +221,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Sky
-        let sky = this.nightSky.mix(this.daySky, sineMath.sin(this.t / 10));
+        let sky = this.nightSky.mix(this.daySky, Math.sin(this.t / 10));
         model_transform = Mat4.identity().times(Mat4.translation(0, 0, -5)).times(Mat4.scale(100, 100, 100));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background.override({color: sky}));
     }

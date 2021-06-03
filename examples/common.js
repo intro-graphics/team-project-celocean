@@ -1074,16 +1074,6 @@ const Ocean_Shader = defs.Ocean_Shader =
                     N = normal;
                     // The final normal vector in screen space.
 
-                    //Find the trangent which is based on the wavelength of the wave
-                    //Derived from catlikecoding.com and deritives
-                    //tangent vector
-                    /*
-                    vec3 tangent = normalize(vec3(1,0,k*amplitude*cos(f)));
-                    vec3 normal = vec3(-tangent.z, 0, tangent.x);
-                    N = normalize(normal);
-                    //Below is original code
-                    //N = normalize( mat3( model_transform ) * normal / squared_scale);
-                    */
                     vertex_worldspace = ( model_transform * vec4( pos_temp, 1.0 ) ).xyz;
                   } `;
         }
@@ -1321,7 +1311,7 @@ const Movement_Controls = defs.Movement_Controls =
         // person style controls into the website.  These can be used to manually move your
         // camera or other objects smoothly through your scene using key, mouse, and HTML
         // button controls to help you explore what's in it.
-        constructor() {
+        constructor(enableMovement) {
             super();
             const data_members = {
                 roll: 0, look_around_locked: true,
@@ -1332,6 +1322,7 @@ const Movement_Controls = defs.Movement_Controls =
 
             this.mouse_enabled_canvases = new Set();
             this.will_take_over_graphics_state = true;
+            this.enableMovement = enableMovement;
         }
 
         set_recipient(matrix_closure, inverse_closure) {
@@ -1389,12 +1380,20 @@ const Movement_Controls = defs.Movement_Controls =
             this.new_line();
 
             this.key_triggered_button("Up", [" "], () => this.thrust[1] = -1, undefined, () => this.thrust[1] = 0);
-            this.key_triggered_button("Forward", ["w"], () => this.thrust[2] = 1, undefined, () => this.thrust[2] = 0);
-            this.new_line();
-            this.key_triggered_button("Left", ["a"], () => this.thrust[0] = 1, undefined, () => this.thrust[0] = 0);
-            this.key_triggered_button("Back", ["s"], () => this.thrust[2] = -1, undefined, () => this.thrust[2] = 0);
-            this.key_triggered_button("Right", ["d"], () => this.thrust[0] = -1, undefined, () => this.thrust[0] = 0);
-            this.new_line();
+            if(this.enableMovement == true){
+                this.key_triggered_button("Forward", ["w"], () => this.thrust[2] = 1, undefined, () => this.thrust[2] = 0);
+                this.new_line();
+                this.key_triggered_button("Left", ["a"], () => this.thrust[0] = 1, undefined, () => this.thrust[0] = 0);
+                this.key_triggered_button("Back", ["s"], () => this.thrust[2] = -1, undefined, () => this.thrust[2] = 0);
+                this.key_triggered_button("Right", ["d"], () => this.thrust[0] = -1, undefined, () => this.thrust[0] = 0);
+                this.new_line();
+            }
+            //this.key_triggered_button("Forward", ["w"], () => this.thrust[2] = 1, undefined, () => this.thrust[2] = 0);
+            //this.new_line();
+            //this.key_triggered_button("Left", ["a"], () => this.thrust[0] = 1, undefined, () => this.thrust[0] = 0);
+            //this.key_triggered_button("Back", ["s"], () => this.thrust[2] = -1, undefined, () => this.thrust[2] = 0);
+            //this.key_triggered_button("Right", ["d"], () => this.thrust[0] = -1, undefined, () => this.thrust[0] = 0);
+            //this.new_line();
             this.key_triggered_button("Down", ["z"], () => this.thrust[1] = 1, undefined, () => this.thrust[1] = 0);
 
             const speed_controls = this.control_panel.appendChild(document.createElement("span"));
