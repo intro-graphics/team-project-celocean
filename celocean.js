@@ -227,11 +227,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Boat
-<<<<<<< HEAD
-        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(Math.PI, 0, 1, 0)));
-=======
-        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015, this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
->>>>>>> 27bcd98cbb9300f2ab5c776241a41203ca9583c1
+        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
         // Outlines
         gl.enable(gl.CULL_FACE);
