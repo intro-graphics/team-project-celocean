@@ -88,14 +88,14 @@ export class CelOcean extends Scene {
 
         this.paused = false;
         this.t = 0.0;
-        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
         this.amplitude = 0.2;
         this.wavelength = 0.5;
         this.init_music_system();
-        this.boat_location_x = 0;
-        this.boat_location_z = 0;
+        this.boat_location_x = 100;
+        this.boat_location_z = 150;
         this.daySky = color(135/256, 206/256, 235/256, 1);
         this.nightSky = color(20/256, 24/256, 82/256, 1);
+        this.initial_camera_location = Mat4.look_at(vec3(5, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
     }
 
     make_control_panel() {
