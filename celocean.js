@@ -88,7 +88,8 @@ export class CelOcean extends Scene {
 
         this.paused = false;
         this.t = 0.0;
-        this.amplitude = 0.2;
+        this.amplitude = 1;
+        this.ampMultiplier = 1;
         this.wavelength = 0.5;
         this.init_music_system();
         this.boat_location_x = 5;
@@ -105,10 +106,10 @@ export class CelOcean extends Scene {
     make_control_panel() {
         // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
         this.key_triggered_button("Pause light revolution", ["e"], () => this.paused = !this.paused);
-        this.key_triggered_button("Inc. Amplitude", ["i"], () => this.amplitude = this.amplitude + 0.1);
-        this.key_triggered_button("Dec. Amplitude", ["k"], () => this.amplitude = this.amplitude - 0.1);
-        this.key_triggered_button("Inc. Wavelength", ["l"], () => this.wavelength = this.wavelength + 0.1);
-        this.key_triggered_button("Dec. Wavelength", ["j"], () => this.wavelength = this.wavelength - 0.1);
+        this.key_triggered_button("Inc. Amplitude", ["i"], () => this.ampMultiplier += 0.1);
+        this.key_triggered_button("Dec. Amplitude", ["k"], () => this.ampMultiplier -= 0.1);
+        this.key_triggered_button("Inc. Wavelength", ["l"], () => this.wavelength += 0.1);
+        this.key_triggered_button("Dec. Wavelength", ["j"], () => this.wavelength -= - 0.1);
         this.key_triggered_button("Play Music", ["n"], () => this.audioElement.play());
         this.key_triggered_button("Resume Music", ["m"], () => this.audioCtx.resume());
 
@@ -120,7 +121,7 @@ export class CelOcean extends Scene {
     }
 
     moveBoat(forward) {
-        // console.log(this.forwardVec);
+        console.log(this.forwardVec);
         this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
         this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
     }
@@ -160,7 +161,7 @@ export class CelOcean extends Scene {
         //Grab the frequency data
         this.analyser.getByteFrequencyData(this.data);
         //normalize the data @ this moment | out of 255, but raised to make it look more like waves!
-        this.amplitude = (this.data[0])/455;
+        this.amplitude = (this.data[0])/455 * this.ampMultiplier;
 
         // Directional light from right-top-front
         program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.sin(this.t/10), 0, 0), color(1, 1, 1, 1), 100000)];
