@@ -122,8 +122,16 @@ export class CelOcean extends Scene {
 
     moveBoat(forward) {
         // console.log(this.forwardVec);
-        this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
-        this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
+        if (this.boat_location_x < 13.95 && this.boat_location_x > 4.05 && this.boat_location_z < 8.95 && this.boat_location_z > -1.05) {
+            this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
+            this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
+            console.log(this.boat_location_x);
+            console.log(this.boat_location_z);
+        }
+        else{
+            this.boat_location_x -= forward ? this.forwardVec[0] : -this.forwardVec[0];
+            this.boat_location_z -= forward ? this.forwardVec[1] : -this.forwardVec[1];
+        }
     }
 
     rotateBoat(clockwise) {
@@ -175,7 +183,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Ocean
-        model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0)).times(Mat4.translation(5,0,0));
+        model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0)).times(Mat4.translation(0,-6,0).times(Mat4.scale(2.5,2.5,1)));
         this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
         // console.log("Amplitude: " + this.amplitude + "Wavelength: " + this.wavelength);
 
