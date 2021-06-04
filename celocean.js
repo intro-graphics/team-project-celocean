@@ -164,9 +164,9 @@ export class CelOcean extends Scene {
         this.amplitude = (this.data[0])/455 * this.ampMultiplier;
 
         // Directional light from right-top-front
-        program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.sin(this.t/10), 0, 0), color(1, 1, 1, 1), 100000)];
+        program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.abs(Math.sin(this.t/10)), 0, 0), color(1, 1, 1, 1), 100000)];
         // Sun
-        let model_transform = Mat4.identity().times(Mat4.translation(10, 0, 5)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
+        let model_transform = Mat4.identity().times(Mat4.translation(10, 0, this.boat_location_z)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
         // Outline
         gl.enable(gl.CULL_FACE);
