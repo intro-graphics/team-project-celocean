@@ -46,7 +46,9 @@ export class CelOcean extends Scene {
                     color: hex_color("#ffffff")}),
             axis: new Material(new defs.Cel_Shader(),
                 {ambient: .6, diffusivity: .5, specularity: 0, color: hex_color("#ffffff")}),
-            background: new Material(new defs.Phong_Shader(),
+            day: new Material(new defs.Phong_Shader(),
+                {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#87CEEB")}),
+            day: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#87CEEB")}),
             outline: new Material(new defs.Phong_Shader(),
                 {ambient: 0, diffusivity: 0, specularity: 0, color: hex_color("#000000")}),
@@ -92,12 +94,12 @@ export class CelOcean extends Scene {
         this.ampMultiplier = 1;
         this.wavelength = 0.5;
         this.init_music_system();
-        this.boat_location_x = 5;
+        this.boat_location_x = 10;
         this.boat_location_z = 7.5;
         this.boat_rotation = Math.PI;
         this.daySky = color(135/256, 206/256, 235/256, 1);
         this.nightSky = color(20/256, 24/256, 82/256, 1);
-        this.initial_camera_location = Mat4.look_at(vec3(5, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(10, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
         this.move_speed = 0.02;
         this.rotate_speed = Math.PI / 32;
         this.forwardVec = vec(0, -this.move_speed);
@@ -121,7 +123,7 @@ export class CelOcean extends Scene {
     }
 
     moveBoat(forward) {
-        console.log(this.forwardVec);
+        // console.log(this.forwardVec);
         this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
         this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
     }
@@ -166,7 +168,7 @@ export class CelOcean extends Scene {
         // Directional light from right-top-front
         program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.sin(this.t/10), 0, 0), color(1, 1, 1, 1), 100000)];
         // Sun
-        let model_transform = Mat4.identity().times(Mat4.translation(5, 0, 5)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
+        let model_transform = Mat4.identity().times(Mat4.translation(10, 0, 5)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
         // Outline
         gl.enable(gl.CULL_FACE);
@@ -175,7 +177,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Ocean
-        model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0));
+        model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0)).times(Mat4.translation(5,0,0));
         this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
         // console.log("Amplitude: " + this.amplitude + "Wavelength: " + this.wavelength);
 
@@ -184,7 +186,7 @@ export class CelOcean extends Scene {
         // this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sphere);
 
         // Volcano
-        model_transform = Mat4.identity().times(Mat4.translation(5, 0.05, 5)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(10, 0.05, 5)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.volcano.draw(context, program_state, model_transform, this.materials.volcano);
         // Outline
         gl.cullFace(gl.FRONT);
@@ -194,7 +196,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
         
         // Crab Rock
-        model_transform = Mat4.identity().times(Mat4.translation(2, 0.35, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(7, 0.35, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
         // Outlines
         gl.enable(gl.CULL_FACE);
@@ -205,7 +207,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
         
         // Building
-        model_transform = Mat4.identity().times(Mat4.translation(8, 0.5, 8)).times(Mat4.rotation(Math.PI/4, 1, 1, 1)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(13, 0.5, 8)).times(Mat4.rotation(Math.PI/4, 1, 1, 1)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.building.draw(context, program_state, model_transform, this.materials.building);
         // Outline
         gl.enable(gl.CULL_FACE);
@@ -214,7 +216,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
         
         // Lagoon
-        model_transform = Mat4.identity().times(Mat4.translation(1, 0.1, 7)).times(Mat4.rotation(-Math.PI/4, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(6, 0.1, 7)).times(Mat4.rotation(-Math.PI/4, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.lagoon.draw(context, program_state, model_transform, this.materials.lagoon);
         // Outlines
         gl.enable(gl.CULL_FACE);
@@ -225,7 +227,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
         
         // Santorini
-        model_transform = Mat4.identity().times(Mat4.translation(8, 0.2, 1)).times(Mat4.rotation(Math.PI/4, 0, 1, 0)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
+        model_transform = Mat4.identity().times(Mat4.translation(13, 0.2, 1)).times(Mat4.rotation(Math.PI/4, 0, 1, 0)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
         this.shapes.santorini.draw(context, program_state, model_transform, this.materials.santorini);
         // Outline
         gl.enable(gl.CULL_FACE);
@@ -247,8 +249,8 @@ export class CelOcean extends Scene {
 
         // Sky
         let sky = this.nightSky.mix(this.daySky, Math.sin(this.t / 10));
-        model_transform = Mat4.identity().times(Mat4.translation(5, 0, 5)).times(Mat4.scale(12, 12, 12));
-        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.background.override({color: sky}));
+        model_transform = Mat4.identity().times(Mat4.translation(10, 0, 5)).times(Mat4.scale(12, 12, 12));
+        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.day.override({color: sky}));
 
         // Camera
         if (this.attached !== undefined) {
