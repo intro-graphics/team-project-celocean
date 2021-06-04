@@ -78,7 +78,7 @@ export class CelOcean extends Scene {
 			boat: new Material(new defs.Cel_Shader(),{
                 color: color(0.25,.1,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.01, high_threshold: 0.01, 
-                color: hex_color("#8a5e37")})
+                color: hex_color("#5e4329")})
         }
         // If N*L is under low_threshold, diffused light is 0.
         // If N*L is over high_threshold, diffused light is maxed.
@@ -98,7 +98,7 @@ export class CelOcean extends Scene {
         this.daySky = color(135/256, 206/256, 235/256, 1);
         this.nightSky = color(20/256, 24/256, 82/256, 1);
         this.daylight = color(1,1,1,1);
-        this.nightlight = color(62/256, 168/256, 230/256)
+        this.nightlight = hex_color("#93c9ed");
         this.initial_camera_location = Mat4.look_at(vec3(10, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
         this.move_speed = 0.02;
         this.rotate_speed = Math.PI / 32;
