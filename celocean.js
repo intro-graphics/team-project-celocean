@@ -122,15 +122,23 @@ export class CelOcean extends Scene {
 
     moveBoat(forward) {
         // console.log(this.forwardVec);
-        if (this.boat_location_x < 13.95 && this.boat_location_x > 4.05 && this.boat_location_z < 8.95 && this.boat_location_z > -1.05) {
-            this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
-            this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
-            console.log(this.boat_location_x);
-            console.log(this.boat_location_z);
+        if (forward == true) {
+            if (this.boat_location_x + this.forwardVec[0] > 14 || this.boat_location_x + this.forwardVec[0] < 4 || this.boat_location_z + this.forwardVec[1] > 9 || this.boat_location_z + this.forwardVec[1] < -1) {
+                console.log("Out of Bounds!");
+            }
+            else {
+                this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
+                this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
+            }
         }
-        else{
-            this.boat_location_x -= forward ? this.forwardVec[0] : -this.forwardVec[0];
-            this.boat_location_z -= forward ? this.forwardVec[1] : -this.forwardVec[1];
+        else if (forward == false) {
+            if (this.boat_location_x - this.forwardVec[0] > 14 || this.boat_location_x - this.forwardVec[0] < 4 || this.boat_location_z - this.forwardVec[1] > 9 || this.boat_location_z - this.forwardVec[1] < -1) {
+                console.log("Out of Bounds!");
+            }
+            else {
+                this.boat_location_x += forward ? this.forwardVec[0] : -this.forwardVec[0];
+                this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
+            }
         }
     }
 
