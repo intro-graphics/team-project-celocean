@@ -75,10 +75,10 @@ export class CelOcean extends Scene {
                     low_threshold: -0.01, high_threshold: 0.01, 
                     low_specular: 0.9, high_specular: 0.95,
                     color: hex_color("#ffffff")}),
-			boat: new Material(new defs.Textured_Cel(),{
+			boat: new Material(new defs.Cel_Shader(),{
                 color: color(0.25,.1,0, 1), ambient: 0.8, diffusivity: .4, specularity: 0,
                 low_threshold: -0.01, high_threshold: 0.01, 
-                texture: new Texture("assets/Boat/boat.png")})
+                color: hex_color("#8a5e37")})
         }
         // If N*L is under low_threshold, diffused light is 0.
         // If N*L is over high_threshold, diffused light is maxed.
@@ -97,6 +97,8 @@ export class CelOcean extends Scene {
         this.boat_rotation = Math.PI;
         this.daySky = color(135/256, 206/256, 235/256, 1);
         this.nightSky = color(20/256, 24/256, 82/256, 1);
+        this.daylight = color(1,1,1,1);
+        this.nightlight = color(62/256, 168/256, 230/256)
         this.initial_camera_location = Mat4.look_at(vec3(10, 0.075, 7.9), vec3(5, 0, 7.5), vec3(0, 1, 0));
         this.move_speed = 0.02;
         this.rotate_speed = Math.PI / 32;
@@ -180,7 +182,10 @@ export class CelOcean extends Scene {
         this.amplitude = (this.data[0])/455 * this.ampMultiplier;
 
         // Directional light from right-top-front
-        program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.abs(Math.sin(this.t/10)), 0, 0), color(1, 1, 1, 1), 100000)];
+        let light = this.nightlight.mix(this.daylight, Math.sin(this.t / 10));
+        program_state.lights = [new Light(vec4(Math.cos(this.t/10), 0.5-0.5*Math.cos(this.t/5), 0, 0), light, 100000)];
+        let ambient = 0.55 + 0.25*Math.sin(this.t/10);
+
         // Sun
         let model_transform = Mat4.identity().times(Mat4.translation(10, 0, this.boat_location_z)).times(Mat4.rotation(this.t / 10, 0, 0, 1)).times(Mat4.translation(10, 0, 0));
         this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sun);
@@ -192,7 +197,7 @@ export class CelOcean extends Scene {
 
         // Ocean
         model_transform = Mat4.identity().times(Mat4.rotation(Math.PI / 2, 1, 0, 0)).times(Mat4.translation(0,-6,0).times(Mat4.scale(2.5,2.5,1)));
-        this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
+        this.shapes.ocean.draw(context, program_state, model_transform, this.materials.ocean.override({ambient: ambient, color: hex_color("#005493"), amplitude: this.amplitude, wavelength: this.wavelength, time: this.t, speed: 3.0}));
         // console.log("Amplitude: " + this.amplitude + "Wavelength: " + this.wavelength);
 
         // Test Sphere
@@ -201,7 +206,7 @@ export class CelOcean extends Scene {
 
         // Volcano
         model_transform = Mat4.identity().times(Mat4.translation(10, 0.05, 5)).times(Mat4.scale(0.5, 0.5, 0.5));
-        this.shapes.volcano.draw(context, program_state, model_transform, this.materials.volcano);
+        this.shapes.volcano.draw(context, program_state, model_transform, this.materials.volcano.override({ambient: ambient}));
         // Outline
         gl.cullFace(gl.FRONT);
         gl.enable(gl.CULL_FACE);
@@ -211,7 +216,7 @@ export class CelOcean extends Scene {
         
         // Crab Rock
         model_transform = Mat4.identity().times(Mat4.translation(7, 0.35, 2)).times(Mat4.rotation(Math.PI/2, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
-        this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock);
+        this.shapes.crabrock.draw(context, program_state, model_transform, this.materials.crabrock.override({ambient: ambient}));
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
@@ -222,7 +227,7 @@ export class CelOcean extends Scene {
         
         // Building
         model_transform = Mat4.identity().times(Mat4.translation(13, 0.5, 8)).times(Mat4.rotation(Math.PI/4, 1, 1, 1)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
-        this.shapes.building.draw(context, program_state, model_transform, this.materials.building);
+        this.shapes.building.draw(context, program_state, model_transform, this.materials.building.override({ambient: ambient}));
         // Outline
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
@@ -231,7 +236,7 @@ export class CelOcean extends Scene {
         
         // Lagoon
         model_transform = Mat4.identity().times(Mat4.translation(6, 0.1, 7)).times(Mat4.rotation(-Math.PI/4, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
-        this.shapes.lagoon.draw(context, program_state, model_transform, this.materials.lagoon);
+        this.shapes.lagoon.draw(context, program_state, model_transform, this.materials.lagoon.override({ambient: ambient}));
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
@@ -242,7 +247,7 @@ export class CelOcean extends Scene {
         
         // Santorini
         model_transform = Mat4.identity().times(Mat4.translation(13, 0.2, 1)).times(Mat4.rotation(Math.PI/4, 0, 1, 0)).times(Mat4.rotation(Math.PI, 0, 1, 0)).times(Mat4.scale(0.5, 0.5, 0.5));
-        this.shapes.santorini.draw(context, program_state, model_transform, this.materials.santorini);
+        this.shapes.santorini.draw(context, program_state, model_transform, this.materials.santorini.override({ambient: ambient}));
         // Outline
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.02, 1.02, 1.02));
@@ -252,7 +257,7 @@ export class CelOcean extends Scene {
         // Boat
         model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015 + 0.5 * this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
         this.attached = model_transform;
-        this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
+        this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat.override({ambient: ambient}));
         // Outlines
         gl.enable(gl.CULL_FACE);
         outline_transform = model_transform.times(Mat4.scale(1.03, 1.03, 1.03));
