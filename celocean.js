@@ -46,9 +46,7 @@ export class CelOcean extends Scene {
                     color: hex_color("#ffffff")}),
             axis: new Material(new defs.Cel_Shader(),
                 {ambient: .6, diffusivity: .5, specularity: 0, color: hex_color("#ffffff")}),
-            day: new Material(new defs.Phong_Shader(),
-                {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#87CEEB")}),
-            day: new Material(new defs.Phong_Shader(),
+            sky: new Material(new defs.Phong_Shader(),
                 {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#87CEEB")}),
             outline: new Material(new defs.Phong_Shader(),
                 {ambient: 0, diffusivity: 0, specularity: 0, color: hex_color("#000000")}),
@@ -250,7 +248,7 @@ export class CelOcean extends Scene {
         // Sky
         let sky = this.nightSky.mix(this.daySky, Math.sin(this.t / 10));
         model_transform = Mat4.identity().times(Mat4.translation(10, 0, 5)).times(Mat4.scale(12, 12, 12));
-        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.day.override({color: sky}));
+        this.shapes.sphere.draw(context, program_state, model_transform, this.materials.sky.override({color: sky}));
 
         // Camera
         if (this.attached !== undefined) {
