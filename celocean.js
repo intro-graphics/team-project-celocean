@@ -111,7 +111,7 @@ export class CelOcean extends Scene {
         this.key_triggered_button("Inc. Wavelength", ["l"], () => this.wavelength += 0.1);
         this.key_triggered_button("Dec. Wavelength", ["j"], () => this.wavelength -= - 0.1);
         this.key_triggered_button("Play Music", ["n"], () => this.audioElement.play());
-        this.key_triggered_button("Resume Music", ["m"], () => this.audioCtx.resume());
+        this.key_triggered_button("Init Music", ["m"], () => this.audioCtx.resume());
 
         // MOVEMENT
         this.key_triggered_button("Forward", ["w"], () => this.moveBoat(true));
@@ -234,7 +234,7 @@ export class CelOcean extends Scene {
         gl.disable(gl.CULL_FACE);
 
         // Boat
-        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015 + this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
+        model_transform = Mat4.identity().times(Mat4.translation(this.boat_location_x, 0.015 + 0.5 * this.y_coord_wave(this.boat_location_x,this.boat_location_z), this.boat_location_z)).times(Mat4.scale(.05,.05,.05).times(Mat4.rotation(this.boat_rotation, 0, 1, 0)));
         this.attached = model_transform;
         this.shapes.boat.draw(context, program_state, model_transform, this.materials.boat);
         // Outlines
@@ -283,7 +283,7 @@ export class CelOcean extends Scene {
         result += this.GerstnerWaveY(dir2, x, z);
         result += this.GerstnerWaveY(dir3, x, z);
 
-        return result;
+        return result/2;
     }
     
     GerstnerWaveY(direction, x, z){
