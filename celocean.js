@@ -124,6 +124,7 @@ export class CelOcean extends Scene {
 
     moveBoat(forward) {
         // console.log(this.forwardVec);
+        // check if moving forward and see if movement would put boat out of bounds
         if (forward == true) {
             if (this.boat_location_x + this.forwardVec[0] > 14 || this.boat_location_x + this.forwardVec[0] < 4 || this.boat_location_z + this.forwardVec[1] > 9 || this.boat_location_z + this.forwardVec[1] < -1) {
                 console.log("Out of Bounds!");
@@ -133,6 +134,7 @@ export class CelOcean extends Scene {
                 this.boat_location_z += forward ? this.forwardVec[1] : -this.forwardVec[1];
             }
         }
+        // check if moving backwards and see if movement would put boat out of bounds
         else if (forward == false) {
             if (this.boat_location_x - this.forwardVec[0] > 14 || this.boat_location_x - this.forwardVec[0] < 4 || this.boat_location_z - this.forwardVec[1] > 9 || this.boat_location_z - this.forwardVec[1] < -1) {
                 console.log("Out of Bounds!");
