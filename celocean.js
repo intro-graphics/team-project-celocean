@@ -175,7 +175,7 @@ export class CelOcean extends Scene {
 
         // Directional light from right-top-front
         let light = this.nightlight.mix(this.daylight, Math.sin(this.t / 10));
-        program_state.lights = [new Light(vec4(Math.cos(this.t/10), Math.abs(Math.sin(this.t/10))+0.1, 0, 0), light, 100000)];
+        program_state.lights = [new Light(vec4(Math.cos(this.t/10), 0.5-0.5*Math.cos(this.t/5), 0, 0), light, 100000)];
         let ambient = 0.55 + 0.25*Math.sin(this.t/10);
 
         // Sun
